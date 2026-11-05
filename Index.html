@@ -1,0 +1,579 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101010">
+<title>Team Gulosos Hunters</title>
+
+<style>
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  background:#101010;
+  color:#fff;
+  font-family:Arial,sans-serif;
+}
+
+header {
+  text-align:center;
+  padding:27px 12px;
+  background:#1b1b1b;
+  border-bottom:3px solid #bd0000;
+}
+
+header h1 { color:#e00000; }
+
+nav {
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:8px;
+  padding:13px;
+  background:#242424;
+}
+
+button {
+  border:0;
+  border-radius:6px;
+  background:#b00000;
+  color:white;
+  padding:12px 15px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.navbtn { background:#383838; }
+
+main {
+  max-width:800px;
+  margin:auto;
+  padding:17px;
+}
+
+.page { display:none; }
+.page.active { display:block; }
+
+.card {
+  background:#202020;
+  border:1px solid #383838;
+  padding:20px;
+  border-radius:10px;
+  margin-bottom:17px;
+}
+
+h2 { color:#e00000; }
+
+label {
+  display:block;
+  margin:15px 0 7px;
+}
+
+input,select,textarea {
+  width:100%;
+  padding:12px;
+  background:#303030;
+  border:1px solid #555;
+  border-radius:6px;
+  color:white;
+}
+
+textarea { resize:vertical; }
+
+.full {
+  width:100%;
+  margin-top:15px;
+}
+
+.hidden { display:none!important; }
+
+.muted {
+  color:#aaa;
+  font-size:13px;
+}
+
+.report {
+  background:#292929;
+  padding:15px;
+  border-radius:8px;
+  margin-top:15px;
+  overflow-wrap:anywhere;
+}
+
+.report img {
+  display:block;
+  width:100%;
+  max-height:250px;
+  object-fit:contain;
+  margin-top:10px;
+  background:#111;
+}
+
+#adminFloat {
+  display:none;
+  position:fixed;
+  right:18px;
+  bottom:20px;
+  z-index:9999;
+  box-shadow:0 4px 18px #000;
+  padding:17px;
+  background:#bd0000;
+}
+
+footer {
+  background:#191919;
+  color:#999;
+  padding:25px;
+  text-align:center;
+  margin-top:30px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>TEAM GULOSOS HUNTERS</h1>
+  <p>Central oficial de relatórios</p>
+</header>
+
+<nav>
+  <button class="navbtn" onclick="showPage('home')">Início</button>
+  <button class="navbtn" onclick="showPage('mission')">Missão</button>
+  <button class="navbtn" onclick="showPage('newReport')">Relatórios</button>
+  <button class="navbtn" onclick="showPage('consult')">Consultar</button>
+  <button class="navbtn" onclick="showPage('login')">Administração</button>
+</nav>
+
+<main>
+
+<section id="home" class="page active">
+  <div class="card">
+    <h2>Bem-vindo, Hunter!</h2>
+    <p>
+      Este é o portal da Team Gulosos Hunters.
+      Aqui você pode registrar ocorrências e consultar relatórios.
+    </p>
+    <button class="full" onclick="showPage('newReport')">
+      CRIAR RELATÓRIO
+    </button>
+  </div>
+
+  <div class="card">
+    <h2>Central de informações</h2>
+    <p>Os registros recebem códigos exclusivos para consulta.</p>
+    <p class="muted">Exemplo: TGH-001</p>
+  </div>
+</section>
+
+<section id="mission" class="page">
+  <div class="card">
+    <h2>Nossa missão</h2>
+    <p>
+      A Team Gulosos Hunters foi criada para incentivar
+      as pessoas a dizerem não às gulosidades e promover
+      uma comunidade consciente e respeitosa.
+    </p>
+    <p>
+      Os relatórios são registros fictícios de uma brincadeira
+      comunitária, não diagnósticos ou acusações reais.
+    </p>
+  </div>
+</section>
+
+<section id="newReport" class="page">
+  <div class="card">
+    <h2>Novo relatório</h2>
+
+    <form id="reportForm">
+      <label>Descrição</label>
+      <textarea id="description" rows="5"
+        placeholder="Descreva a ocorrência..." required></textarea>
+
+      <label>Nível estimado</label>
+      <select id="level">
+        <option>Aguardando avaliação</option>
+        <option>Nível 0 - Sem indícios</option>
+        <option>Nível 1 - Baixo</option>
+        <option>Nível 2 - Moderado</option>
+        <option>Nível 3 - Elevado</option>
+        <option>Nível 4 - Extremo</option>
+        <option>Nível 5 - Crítico</option>
+      </select>
+
+      <label>Anexar prints (máximo 3)</label>
+      <input id="images" type="file"
+        accept="image/*" multiple>
+
+      <p class="muted">
+        Até 1 MB por imagem. Não envie informações pessoais.
+      </p>
+
+      <button class="full" type="submit">
+        ENVIAR RELATÓRIO
+      </button>
+    </form>
+
+    <div id="message"></div>
+  </div>
+</section>
+
+<section id="consult" class="page">
+  <div class="card">
+    <h2>Consultar relatório</h2>
+
+    <label>Código do relatório</label>
+    <input id="codeSearch" placeholder="TGH-001">
+
+    <button class="full" onclick="consultReport()">
+      CONSULTAR
+    </button>
+
+    <div id="consultResult"></div>
+  </div>
+</section>
+
+<section id="login" class="page">
+  <div class="card">
+    <h2>Acesso administrativo</h2>
+    <p>Área reservada aos criadores.</p>
+
+    <label>Código de acesso</label>
+    <input type="password" id="adminCode"
+      placeholder="Código administrativo">
+
+    <button class="full" onclick="loginAdmin()">
+      ENTRAR
+    </button>
+
+    <p id="loginMessage"></p>
+  </div>
+</section>
+
+<section id="admin" class="page">
+  <div class="card">
+    <h2>Painel administrativo</h2>
+    <p>Gerenciamento dos relatórios.</p>
+
+    <button onclick="loadAdmin()">ATUALIZAR</button>
+    <button onclick="logoutAdmin()">SAIR</button>
+
+    <div id="adminList"></div>
+  </div>
+
+  <div class="card">
+    <h2>Configurações</h2>
+
+    <label>Mensagem da página inicial</label>
+    <textarea id="homeMessage" rows="3"></textarea>
+
+    <button class="full" onclick="saveConfig()">
+      SALVAR CONFIGURAÇÃO
+    </button>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  TEAM GULOSOS HUNTERS © 2026
+  <p class="muted">Portal comunitário independente.</p>
+</footer>
+
+<button id="adminFloat" onclick="openAdmin()">
+  PAINEL ADMIN
+</button>
+
+<script>
+const ADMIN_CODE = "TGH-ADMIN-2026";
+const KEY = "tgh_reports_v3";
+
+function showPage(id) {
+  document.querySelectorAll(".page").forEach(p =>
+    p.classList.remove("active")
+  );
+
+  document.getElementById(id).classList.add("active");
+}
+
+function getReports() {
+  try {
+    return JSON.parse(localStorage.getItem(KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveReports(data) {
+  localStorage.setItem(KEY, JSON.stringify(data));
+}
+
+function generateCode(reports) {
+  const max = reports.reduce((n, r) => {
+    const value = parseInt(r.id.replace("TGH-", "")) || 0;
+    return Math.max(n, value);
+  }, 0);
+
+  return "TGH-" + String(max + 1).padStart(3, "0");
+}
+
+// ENVIAR RELATÓRIO
+
+document.getElementById("reportForm")
+.addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const files = [...document.getElementById("images").files];
+
+  if (files.length > 3) {
+    alert("Máximo de 3 imagens.");
+    return;
+  }
+
+  if (files.some(f => f.size > 1024 * 1024)) {
+    alert("Cada imagem deve ter até 1 MB.");
+    return;
+  }
+
+  const images = await Promise.all(files.map(file =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    })
+  ));
+
+  const reports = getReports();
+
+  const report = {
+    id: generateCode(reports),
+    description: document.getElementById("description").value,
+    level: document.getElementById("level").value,
+    images,
+    response: "",
+    status: "Aguardando análise",
+    date: new Date().toLocaleString("pt-BR")
+  };
+
+  reports.unshift(report);
+
+  try {
+    saveReports(reports);
+
+    document.getElementById("message").innerHTML =
+      "<div class='report'><h3>Relatório registrado!</h3>" +
+      "<h2>" + report.id + "</h2>" +
+      "<p>Guarde seu código de consulta.</p></div>";
+
+    this.reset();
+
+  } catch {
+    alert("Armazenamento cheio. Reduza o tamanho das imagens.");
+  }
+});
+
+// CONSULTAR
+
+function consultReport() {
+  const code = document.getElementById("codeSearch")
+    .value.trim().toUpperCase();
+
+  const report = getReports().find(r => r.id === code);
+  const result = document.getElementById("consultResult");
+
+  result.innerHTML = "";
+
+  if (!report) {
+    result.textContent = "Relatório não encontrado neste navegador.";
+    return;
+  }
+
+  const card = document.createElement("div");
+  card.className = "report";
+
+  const fields = [
+    ["Código", report.id],
+    ["Descrição", report.description],
+    ["Nível", report.level],
+    ["Status", report.status],
+    ["Resposta", report.response || "Aguardando resposta"]
+  ];
+
+  fields.forEach(([name, value]) => {
+    const p = document.createElement("p");
+    p.textContent = name + ": " + value;
+    card.appendChild(p);
+  });
+
+  report.images.forEach(src => {
+    const img = document.createElement("img");
+    img.src = src;
+    card.appendChild(img);
+  });
+
+  result.appendChild(card);
+}
+
+// LOGIN ADMINISTRATIVO
+
+function loginAdmin() {
+  const code = document.getElementById("adminCode").value;
+
+  if (code === ADMIN_CODE) {
+    sessionStorage.setItem("tgh_admin", "true");
+
+    document.getElementById("adminFloat").style.display = "block";
+    document.getElementById("adminCode").value = "";
+    document.getElementById("loginMessage").textContent =
+      "Acesso autorizado!";
+
+    showPage("home");
+
+  } else {
+    document.getElementById("loginMessage").textContent =
+      "Código incorreto!";
+  }
+}
+
+// BOTÃO FLUTUANTE
+
+function openAdmin() {
+  if (sessionStorage.getItem("tgh_admin") !== "true") {
+    showPage("login");
+    return;
+  }
+
+  showPage("admin");
+  loadAdmin();
+}
+
+// PAINEL
+
+function loadAdmin() {
+  if (sessionStorage.getItem("tgh_admin") !== "true") {
+    showPage("login");
+    return;
+  }
+
+  const container = document.getElementById("adminList");
+  container.innerHTML = "";
+
+  const reports = getReports();
+
+  if (!reports.length) {
+    container.textContent = "Nenhum relatório registrado neste navegador.";
+    return;
+  }
+
+  reports.forEach(report => {
+    const card = document.createElement("div");
+    card.className = "report";
+
+    const title = document.createElement("h3");
+    title.textContent = report.id;
+
+    const description = document.createElement("p");
+    description.textContent = report.description;
+
+    const level = document.createElement("select");
+
+    [
+      "Aguardando avaliação",
+      "Nível 0 - Sem indícios",
+      "Nível 1 - Baixo",
+      "Nível 2 - Moderado",
+      "Nível 3 - Elevado",
+      "Nível 4 - Extremo",
+      "Nível 5 - Crítico"
+    ].forEach(value => {
+      const opt = document.createElement("option");
+      opt.value = value;
+      opt.textContent = value;
+      level.appendChild(opt);
+    });
+
+    level.value = report.level;
+
+    const status = document.createElement("select");
+
+    [
+      "Aguardando análise",
+      "Em análise",
+      "Respondido",
+      "Encerrado"
+    ].forEach(value => {
+      const opt = document.createElement("option");
+      opt.value = value;
+      opt.textContent = value;
+      status.appendChild(opt);
+    });
+
+    status.value = report.status;
+
+    const answer = document.createElement("textarea");
+    answer.placeholder = "Resposta administrativa...";
+    answer.value = report.response || "";
+
+    report.images.forEach(src => {
+      const img = document.createElement("img");
+      img.src = src;
+      card.appendChild(img);
+    });
+
+    const save = document.createElement("button");
+    save.className = "full";
+    save.textContent = "SALVAR RESPOSTA";
+
+    save.onclick = () => {
+      const all = getReports();
+      const item = all.find(r => r.id === report.id);
+
+      if (item) {
+        item.level = level.value;
+        item.status = status.value;
+        item.response = answer.value;
+        saveReports(all);
+        loadAdmin();
+      }
+    };
+
+    card.append(title, description, level, status, answer, save);
+    container.appendChild(card);
+  });
+}
+
+function logoutAdmin() {
+  sessionStorage.removeItem("tgh_admin");
+  document.getElementById("adminFloat").style.display = "none";
+  showPage("home");
+}
+
+// CONFIGURAÇÕES
+
+function saveConfig() {
+  const value = document.getElementById("homeMessage").value;
+  localStorage.setItem("tgh_home_message", value);
+  alert("Configuração salva neste navegador.");
+}
+
+document.getElementById("homeMessage").value =
+  localStorage.getItem("tgh_home_message") || "";
+
+const savedMessage = localStorage.getItem("tgh_home_message");
+
+if (savedMessage) {
+  document.querySelector("#home .card p").textContent = savedMessage;
+}
+
+// RESTAURAR BOTÃO NA SESSÃO ATIVA
+
+if (sessionStorage.getItem("tgh_admin") === "true") {
+  document.getElementById("adminFloat").style.display = "block";
+}
+</script>
+
+</body>
+</html>
